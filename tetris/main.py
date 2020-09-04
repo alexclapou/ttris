@@ -59,21 +59,12 @@ while 1:
         draw_everything(1)
         time_switch = time_now
 
-    '''
-    if new_piece.left_bound(all_pieces[new_piece][0], all_pieces[new_piece][1]) and keys[pg.K_LEFT] and time_now - time_left > 600:
-            left_right -= b.block_size()
-            time_left = time_now
-
-        elif new_piece.right_bound(all_pieces[new_piece][0], all_pieces[new_piece][1]) and keys[pg.K_RIGHT] and time_now - time_right > 600:
-            left_right += b.block_size()
-            time_right = time_now
-    '''
-    if new_piece.left_bound(all_pieces[new_piece][0], all_pieces[new_piece][1]) and keys[pg.K_LEFT] and time_now - time_left > 100:
+    if new_piece.left_bound(all_pieces[new_piece][0], all_pieces[new_piece][1]-block_size) and keys[pg.K_LEFT] and time_now - time_left > 100:
         all_pieces[new_piece][1] -= b.block_size()
         draw_everything(1)
         time_left = 1
 
-    if new_piece.right_bound(all_pieces[new_piece][0], all_pieces[new_piece][1]) and keys[pg.K_RIGHT] and time_now - time_right > 1000:
+    if new_piece.right_bound(all_pieces[new_piece][0], all_pieces[new_piece][1]+block_size) and keys[pg.K_RIGHT] and time_now - time_right > 1000:
         all_pieces[new_piece][1] += b.block_size()
         draw_everything(1)
         time_right = 1

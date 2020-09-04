@@ -47,7 +47,10 @@ class Board(object):
             all_pieces.pop(piece_to_delete, None)
 
     def pieces_down(self, all_pieces):
-        pass
+        print(all_pieces.keys())
+        for piece in all_pieces:
+            while not piece.placed(all_pieces[piece][0], all_pieces[piece][1]):
+                all_pieces[piece][0] += block_size
 
 
     def check_full_lines(self, all_pieces):
@@ -55,6 +58,7 @@ class Board(object):
         for line_index, line in reversed(list(enumerate(self.board))):
             if len(set(line)) == 1 and line[0] == 1: # if one 
                 self.empty_line(all_pieces, line_index)
+                print(all_pieces.keys())
                 self.pieces_down(all_pieces)
                 print(np.matrix(self.board))
 
@@ -159,8 +163,6 @@ class Piece(object):
                     main_rectangle = pg.draw.rect(self.screen, (255,255,255), sec_rectangle, 1)
                 x += block_size
             y += block_size
-        #print("left_right, self.max_right, self.screen.get_size()[0]")
-        #print(left_right, "               ", self.max_right, "                ",  self.screen.get_size()[0])
         return [speedy, left_right]
 
     def occupied(self, line_piece, column_piece):
@@ -172,6 +174,8 @@ class Piece(object):
             for character in line:
                 if character == 'O':
                     if (x+column_piece)//30-5 > 9:
+                        return True
+                    if (y+line_piece)//30 > 19:
                         return True
                     if self.board[(y+line_piece)//30][(x+column_piece)//30-5] == 1: #5 number of black squares
                         return True
