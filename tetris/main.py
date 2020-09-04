@@ -29,8 +29,22 @@ pg.display.update()
 level += b.block_size()
 pg.key.set_repeat(600)
 keep_div = 1
+clockobject = pg.time.Clock()
+
+def draw_everything(left_right = None):
+    screen.fill((0,0,0))
+    b.draw_board()
+    #draw all the pieces on the board and set the left_right and level for the actual piece
+    #all_pieces[new_piece][1] = left_right
+    for piece in all_pieces:
+        _level, _left_right = all_pieces[piece][0], all_pieces[piece][1]
+        all_pieces[piece] = piece.draw(_level, _left_right)
+    if not new_piece.placed(all_pieces[new_piece][0], all_pieces[new_piece][1]) and left_right == None:
+        all_pieces[new_piece][0] += b.block_size()
+    pg.display.update()
 
 while 1:
+    clockobject.tick(20)
     screen.fill((0,0,0))
     b.draw_board()
     for event in pg.event.get():
@@ -39,9 +53,9 @@ while 1:
     time_now = pg.time.get_ticks()
     keys = pg.key.get_pressed()
 
-    if time_now - time_left > 200 and keys[pg.K_SPACE]:
+    if time_now - time_left > 200 and keys[pg.K_UP]:
         all_pieces[new_piece] = new_piece.next_form(all_pieces[new_piece][0], all_pieces[new_piece][1])#all_piece[piece][0]/[1]
-        time_left = time_now
+        time_left = 1
 
     '''
     if new_piece.left_bound(all_pieces[new_piece][0], all_pieces[new_piece][1]) and keys[pg.K_LEFT] and time_now - time_left > 600:
@@ -52,30 +66,22 @@ while 1:
             left_right += b.block_size()
             time_right = time_now
     '''
-    if new_piece.left_bound(all_pieces[new_piece][0], all_pieces[new_piece][1]) and keys[pg.K_LEFT] and time_now - time_left > 600:
+    if new_piece.left_bound(all_pieces[new_piece][0], all_pieces[new_piece][1]) and keys[pg.K_LEFT] and time_now - time_left > 100:
         all_pieces[new_piece][1] -= b.block_size()
-        time_left = time_now
+        draw_everything(1)
+        time_left = 1
 
-    elif new_piece.right_bound(all_pieces[new_piece][0], all_pieces[new_piece][1]) and keys[pg.K_RIGHT] and time_now - time_right > 600:
+    if new_piece.right_bound(all_pieces[new_piece][0], all_pieces[new_piece][1]) and keys[pg.K_RIGHT] and time_now - time_right > 1000:
         all_pieces[new_piece][1] += b.block_size()
-        time_right = time_now
+        draw_everything(1)
+        time_right = 1
 
-    elif not new_piece.placed(all_pieces[new_piece][0], all_pieces[new_piece][1]) and time_now - time_init > 600:
-        screen.fill((0,0,0))
-        b.draw_board()
-        #draw all the pieces on the board and set the left_right and level for the actual piece
-        #all_pieces[new_piece][1] = left_right
-        for piece in all_pieces:
-            _level, _left_right = all_pieces[piece][0], all_pieces[piece][1]
-            all_pieces[piece] = piece.draw(_level, _left_right)
-        if not new_piece.placed(all_pieces[new_piece][0], all_pieces[new_piece][1]):
-            all_pieces[new_piece][0] += b.block_size()
+    if not new_piece.placed(all_pieces[new_piece][0], all_pieces[new_piece][1]) and time_now - time_init > 700:
+        draw_everything()
         time_init = time_now
-        pg.display.update()
-    
-    elif keys[pg.K_DOWN]:
-        keep_div = time_init - time_init // 20
-        time_init = time_now // keep_div
+            
+    if keys[pg.K_DOWN]:
+        time_init = 1
 
     if new_piece.placed(all_pieces[new_piece][0], all_pieces[new_piece][1]):
         if all_pieces[new_piece][0] == all_pieces[new_piece][1] == 0:

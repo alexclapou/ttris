@@ -52,6 +52,8 @@ class Board(object):
         for line_index, line in reversed(list(enumerate(self.board))):
             if len(set(line)) == 1 and line[0] == 1: # if one 
                 self.empty_line(all_pieces, line_index)
+                self.check_full_lines(all_pieces)
+                break
                 print(np.matrix(self.board))
 
     def place_piece(self, piece, line_piece, column_piece):
