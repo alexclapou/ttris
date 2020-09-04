@@ -22,6 +22,7 @@ all_pieces[new_piece] = [level, left_right] #0-line 1-column
 time_init = pg.time.get_ticks()
 time_left = pg.time.get_ticks()
 time_right = pg.time.get_ticks()
+time_switch = pg.time.get_ticks()
 screen.fill((0,0,0))
 b.draw_board()
 all_pieces[new_piece] = new_piece.draw(level, left_right)
@@ -53,9 +54,10 @@ while 1:
     time_now = pg.time.get_ticks()
     keys = pg.key.get_pressed()
 
-    if time_now - time_left > 200 and keys[pg.K_UP]:
+    if time_now - time_switch > 300 and keys[pg.K_UP]:
         all_pieces[new_piece] = new_piece.next_form(all_pieces[new_piece][0], all_pieces[new_piece][1])#all_piece[piece][0]/[1]
-        time_left = 1
+        draw_everything(1)
+        time_switch = time_now
 
     '''
     if new_piece.left_bound(all_pieces[new_piece][0], all_pieces[new_piece][1]) and keys[pg.K_LEFT] and time_now - time_left > 600:

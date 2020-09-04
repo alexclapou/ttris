@@ -151,7 +151,7 @@ class Shapes(object):
         return random.choice(self.colors)
 
     def get_square(self):
-        return self.shapes[1]
+        return self.shapes[4]
 
     def init_shapes(self):
         self.shapes.append(o_shape)

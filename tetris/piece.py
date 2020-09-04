@@ -46,14 +46,16 @@ class Board(object):
         for piece_to_delete in pieces_to_delete:
             all_pieces.pop(piece_to_delete, None)
 
+    def pieces_down(self, all_pieces):
+        pass
+
 
     def check_full_lines(self, all_pieces):
         line = 0
         for line_index, line in reversed(list(enumerate(self.board))):
             if len(set(line)) == 1 and line[0] == 1: # if one 
                 self.empty_line(all_pieces, line_index)
-                self.check_full_lines(all_pieces)
-                break
+                self.pieces_down(all_pieces)
                 print(np.matrix(self.board))
 
     def place_piece(self, piece, line_piece, column_piece):
