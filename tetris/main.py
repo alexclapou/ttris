@@ -1,4 +1,5 @@
 import os, sys
+#sorted dict
 import pygame as pg
 from shapes import Shapes
 from piece import *
@@ -82,8 +83,8 @@ while 1:
         if new_piece.occupied(all_pieces[new_piece][0], all_pieces[new_piece][1]):
             all_pieces[new_piece][0] -= block_size
         b.place_piece(new_piece, all_pieces[new_piece][0], all_pieces[new_piece][1])
+        b.check_full_lines(all_pieces)
         new_piece = Piece(shapes.get_random_shape(), screen, shapes.get_random_color(), size, b)
         level, left_right = 0, 0
         all_pieces[new_piece] = [level, left_right]
         pg.time.delay(300)
-        b.check_full_lines(all_pieces)

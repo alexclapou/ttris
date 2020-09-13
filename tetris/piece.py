@@ -1,4 +1,5 @@
 import pygame as pg
+import operator
 import numpy as np
 
 block_size = 30
@@ -47,20 +48,19 @@ class Board(object):
             all_pieces.pop(piece_to_delete, None)
 
     def pieces_down(self, all_pieces):
-        print(all_pieces.keys())
-        for piece in all_pieces:
-            while not piece.placed(all_pieces[piece][0], all_pieces[piece][1]):
+        for piece in sorted(all_pieces, key=all_pieces.get, reverse=True):
+            lines_to_delete = piece.get_coordinates(all_pieces[piece][0], all_pieces[piece][1])
+            self.delete_piece(all_pieces, piece, lines_to_delete)
+            while not piece.placed(all_pieces[piece][0]+block_size, all_pieces[piece][1]):
                 all_pieces[piece][0] += block_size
-
+            self.place_piece(piece, all_pieces[piece][0], all_pieces[piece][1])
 
     def check_full_lines(self, all_pieces):
         line = 0
         for line_index, line in reversed(list(enumerate(self.board))):
             if len(set(line)) == 1 and line[0] == 1: # if one 
                 self.empty_line(all_pieces, line_index)
-                print(all_pieces.keys())
                 self.pieces_down(all_pieces)
-                print(np.matrix(self.board))
 
     def place_piece(self, piece, line_piece, column_piece):
         shape = piece.get_shape()
@@ -87,10 +87,18 @@ class Piece(object):
         self.max_bottom = 0
         self.board = board.get_board()
 
+    def get_final_column_value(self, row, column, op):
+        keep_column_move_leftside = column
+        while self.occupied(row, keep_column_move_leftside):
+            keep_column_move_leftside = op(keep_column_move_leftside, block_size)
+        return keep_column_move_leftside
+
+
     def change_coordinates(self, row, column):
         y = 0
         right_bound = 0
         left_bound = 9
+        lines = []
         for line in self.shape:
             x = block_size*8
             for character in line:
@@ -100,6 +108,7 @@ class Piece(object):
                     right_bound = max(right_bound, (x+column)//30-5)
                     left_bound = min(left_bound, (x+column)//30-5)
                 x += block_size
+            lines.append((y+row)//30)
             y += block_size
         while left_bound < 0:
             left_bound += 1
@@ -107,6 +116,12 @@ class Piece(object):
         while right_bound > 9:
             right_bound -= 1
             column -= block_size
+        try_right = self.get_final_column_value(row, column, operator.add)
+        try_left = self.get_final_column_value(row, column, operator.sub)
+        if abs(try_right - column) < abs(try_left - column):
+            column = try_right
+        else:
+            column = try_left
         while self.occupied(row, column):
             row -= block_size
         return [row, column]
@@ -173,8 +188,6 @@ class Piece(object):
             #need a varaible for getting coordinates
             for character in line:
                 if character == 'O':
-                    if (x+column_piece)//30-5 > 9:
-                        return True
                     if (y+line_piece)//30 > 19:
                         return True
                     if self.board[(y+line_piece)//30][(x+column_piece)//30-5] == 1: #5 number of black squares
