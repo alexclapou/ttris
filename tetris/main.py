@@ -18,7 +18,7 @@ shapes = Shapes()
 b = Board(screen)
 all_pieces = {}
 
-new_piece = Piece(shapes.get_random_shape(), screen, shapes.get_random_color(), size, b)
+new_piece = Piece(shapes.get_square(), screen, shapes.get_random_color(), size, b)
 all_pieces[new_piece] = [level, left_right] #0-line 1-column
 time_init = pg.time.get_ticks()
 time_left = pg.time.get_ticks()
@@ -84,7 +84,7 @@ while 1:
             all_pieces[new_piece][0] -= block_size
         b.place_piece(new_piece, all_pieces[new_piece][0], all_pieces[new_piece][1])
         b.check_full_lines(all_pieces)
-        new_piece = Piece(shapes.get_random_shape(), screen, shapes.get_random_color(), size, b)
+        new_piece = Piece(shapes.get_square(), screen, shapes.get_random_color(), size, b)
         level, left_right = 0, 0
         all_pieces[new_piece] = [level, left_right]
         pg.time.delay(300)

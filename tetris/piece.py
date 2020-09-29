@@ -88,13 +88,24 @@ class Piece(object):
         self.board = board.get_board()
 
     def get_final_column_value(self, row, column, op):
-        keep_column_move_leftside = column
-        while self.occupied(row, keep_column_move_leftside):
-            keep_column_move_leftside = op(keep_column_move_leftside, block_size)
-        return keep_column_move_leftside
+        keep_column_move = column
+        out_of_board = False
+        try:
+            while self.occupied(row, keep_column_move):
+                keep_column_move = op(keep_column_move, block_size)
+            return keep_column_move
+        except:
+            return None
 
 
     def change_coordinates(self, row, column):
+        left_right_side = 0
+        if column > 0:
+            left_right_side = 1
+        else:
+            left_right_side = -1
+        print(left_right_side)
+        keep_row, keep_column = row, column
         y = 0
         right_bound = 0
         left_bound = 9
@@ -116,20 +127,46 @@ class Piece(object):
         while right_bound > 9:
             right_bound -= 1
             column -= block_size
-        try_right = self.get_final_column_value(row, column, operator.add)
         try_left = self.get_final_column_value(row, column, operator.sub)
-        if abs(try_right - column) < abs(try_left - column):
-            column = try_right
+        try_right = self.get_final_column_value(row, column, operator.add)
+        if try_right != None and try_left != None:
+            if abs(try_right - column) < abs(try_left - column):
+                column = try_right
+            else:
+                column = try_left
+            return [row, column]
+        if try_left == None:
+            left_right_side = -1
+        if try_right == None:
+            left_right_side = 1
+        '''
+        if try_right == None and try_left == None:
+            row = keep_row
+            column = keep_column
+            self.previous_form(keep_row,keep_column)
+            return [row, column]
         else:
-            column = try_left
-        while self.occupied(row, column):
-            row -= block_size
+            if try_right == None and left_right_side == 1:
+                self.previous_form(keep_row,keep_column)
+                return [row, column]
+            elif try_left == None and left_right_side == -1:
+                self.previous_form(keep_row,keep_column)
+                return [row, column]
+            elif abs(try_right - column) < abs(try_left - column):
+                column = try_right
+            else:
+                column = try_left
+        '''
         return [row, column]
 
     def next_form(self, row, column):
         self.current_shape += 1
         self.shape = self.shapes[self.current_shape % 4]
         return self.change_coordinates(row, column)
+
+    def previous_form(self, row, column):
+        self.current_shape -= 1
+        self.shape = self.shapes[self.current_shape % 4]
 
     def get_coordinates(self, line_piece, column_piece):
         coord = set()
@@ -190,6 +227,8 @@ class Piece(object):
                 if character == 'O':
                     if (y+line_piece)//30 > 19:
                         return True
+                    if (x+column_piece)//30-5 < 0 or (x+column_piece)//30-5 > 9:
+                        raise ValueError
                     if self.board[(y+line_piece)//30][(x+column_piece)//30-5] == 1: #5 number of black squares
                         return True
                 x += block_size
